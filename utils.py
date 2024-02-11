@@ -87,3 +87,20 @@ def get_tridiagonal_matrix(alphas, betas):
     n = len(alphas)
     T = np.diag(alphas) + np.diag(betas, 1) + np.diag(betas, -1)
     return T
+
+
+def get_sturm_sequence(alphas, betas, lam):
+    n = len(alphas)
+    fs = np.zeros(n + 1)
+    fs[n] = 1
+    for k in range(1, n + 1):
+        fs[n - k] = fs[n - k + 1] * (lam - alphas[k - 1]) - (
+            betas[k - 2] ** 2 * fs[n - k + 2] if k > 1 else 0
+        )
+    return fs
+
+
+def get_n_sturm(alphas, betas, lam):
+    fs = get_sturm_sequence(alphas, betas, lam)
+    diff_sturm_sequence = fs[:-1] * fs[1:]
+    return np.sum(diff_sturm_sequence < 0)
